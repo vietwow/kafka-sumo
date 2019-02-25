@@ -91,8 +91,8 @@ func main() {
                     e.TopicPartition, string(e.Value))
 
                 // Sent to SumoLogic
-                //formated := sClient.FormatEvents(string(e.Value))
-                go sClient.SendLogs(string(e.Value))
+                formated := sClient.ProcessEvents(string(e.Value))
+                // go sClient.SendLogs(string(e.Value))
 
                 if e.Headers != nil {
                     fmt.Printf("%% Headers: %v\n", e.Headers)

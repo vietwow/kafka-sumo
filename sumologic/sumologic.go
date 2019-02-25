@@ -37,17 +37,41 @@ func NewSumoLogic(url string, host string, name string, category string, expVers
 	}
 }
 
+
+type Log struct {
+	Timestamp       int64     `json:"Timestamp"`
+	SyslogPri       string    `json:"Syslog.pri"`
+	SyslogTimestamp time.Time `json:"Syslog.timestamp"`
+	SyslogHostname  string    `json:"Syslog.hostname"`
+	SyslogAppname   string    `json:"Syslog.appname"`
+	SyslogProcid    string    `json:"Syslog.procid"`
+	Message         string    `json:"Message"`
+	SyslogFacility  string    `json:"Syslog.facility"`
+	SyslogSeverity  string    `json:"Syslog.severity"`
+	LogplexDrainID  string    `json:"Logplex.drain_id"`
+	LogplexFrameID  string    `json:"Logplex.frame_id"`
+}
+
+
 //FormatEvents
 //Format SlowLog Interface to flat string
-// func (s *SumoLogic) FormatEvents(slowLog slowlog.SlowLogData) string {
-// 	var msg []byte
-// 	sumologicMessage, err := json.Marshal(slowLog)
-// 	if err == nil {
-// 		msg = sumologicMessage
-// 	}
-// 	return string(msg)
+func (s *SumoLogic) ProcessEvents(msg string) string {
+    // Get byte slice from string.
+    bytes := []byte(msg)
 
-// }
+	// Unmarshal string into structs.
+	var log []Log
+    json.Unmarshal(bytes, &log)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+
+    // Loop over structs and display them.
+    for l := range log {
+        fmt.Printf("Logplex.DrainID = %v, Message = %v", log[l].LogplexDrainID, log[l].Message)
+        fmt.Println()
+    }
+}
 
 func (s *SumoLogic) SendLogs(logStringToSend string) {
 	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + s.sumoURL)
