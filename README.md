@@ -19,7 +19,8 @@
 docker exec kafka-sumo_kafka_1 kafka-topics --list --zookeeper=zookeeper:2181
 
 docker exec -ti kafka-sumo_kafka_1 bash
-kafka-console-producer --broker-list kafka:29092 --topic devops```
+kafka-console-producer --broker-list kafka:29092 --topic devops
+```
 
 ## Other debug :
 
