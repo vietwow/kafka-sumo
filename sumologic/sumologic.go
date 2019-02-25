@@ -91,8 +91,8 @@ func (s *SumoLogic) SendLogs(logStringToSend []byte) {
 		logging.Error.Printf("http.NewRequest() error: %v\n", err)
 		return
 	}
-	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("Content-Encoding", "gzip")
+	request.Header.Set("Content-Type", "application/json")
+	// request.Header.Add("Content-Encoding", "gzip")
 	request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
 
 	if s.sumoName != "" {
@@ -123,8 +123,8 @@ func (s *SumoLogic) SendLogs(logStringToSend []byte) {
 			if err != nil {
 				logging.Error.Printf("http.NewRequest() error: %v\n", err)
 			}
-			request.Header.Add("Content-Type", "application/json")
-			request.Header.Add("Content-Encoding", "gzip")
+			request.Header.Set("Content-Type", "application/json")
+			// request.Header.Add("Content-Encoding", "gzip")
 			request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
 
 			if s.sumoName != "" {
