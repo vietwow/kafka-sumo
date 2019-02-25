@@ -3,8 +3,7 @@ package sumologic
 import (
 	"bytes"
 	"compress/gzip"
-	"encoding/json"
-	"fmt"
+	// "encoding/json"
 	"errors"
 	"net/http"
 	"time"
@@ -38,11 +37,6 @@ func NewSumoLogic(url string, host string, name string, category string, expVers
 	}
 }
 
-/*
-
-{"syslog.pri":"190","syslog.timestamp":"2019-02-25T16:09:23.296535+00:00","syslog.hostname":"host","syslog.appname":"app","syslog.procid":"sidekiq_pusher.1","message":"[PROJECT_ROOT]/app/models/trading_account.rb:95 in `pnl'","syslog.facility":"local7","syslog.severity":"info","logplex.drain_id":"d.133fd389-68d7-4d1e-a40d-521da502593a","logplex.frame_id":"EBC908AFB0D5433EFE95C18457C0B5F8"}
-
-*/
 
 type Log struct {
 	Timestamp       int64     `json:"Timestamp"`
@@ -59,124 +53,122 @@ type Log struct {
 }
 
 
-//ProcessEvents
+//FormatEvents
 //Format SlowLog Interface to flat string
-func (s *SumoLogic) ProcessEvents(msg []byte) {
-	// https://github.com/lightstaff/confluent-kafka-go-example/blob/master/main.go
-	var log Log
-	if err := json.Unmarshal(msg, &log); err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("success parse consumed log : message: %s, timestamp: %d, Logplex.DrainID = %v\n", log.Message, log.Timestamp, log.LogplexDrainID)
-
+func (s *SumoLogic) ProcessEvents(msg string) string {
     // Get byte slice from string.
-    // bytes := []byte(msg)
+    bytes := []byte(msg)
 
 	// Unmarshal string into structs.
-	// var log []Log
-    // json.Unmarshal(bytes, &log)
+	var log []Log
+    json.Unmarshal(bytes, &log)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
 
     // Loop over structs and display them.
-    // for l := range log {
-    //     fmt.Printf("Logplex.DrainID = %v, Message = %v", log[l].LogplexDrainID, log[l].Message)
-    //     fmt.Println()
-    // }
+    for l := range log {
+        fmt.Printf("Logplex.DrainID = %v, Message = %v", log[l].LogplexDrainID, log[l].Message)
+        fmt.Println()
+    }
 }
 
-func (s *SumoLogic) SendLogs(logStringToSend []byte) {
+func (s *SumoLogic) SendLogs(logStringToSend string) {
 	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + s.sumoURL)
-
-	request, err := http.NewRequest("POST", s.sumoURL, &logStringToSend)
-	if err != nil {
-		logging.Error.Printf("http.NewRequest() error: %v\n", err)
-		return
-	}
-	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("Content-Encoding", "gzip")
-	request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
-
-	if s.sumoName != "" {
-		request.Header.Add("X-Sumo-Name", s.sumoName)
-	}
-	if s.sumoHost != "" {
-		request.Header.Add("X-Sumo-Host", s.sumoHost)
-	}
-	if s.sumoCategory != "" {
-		request.Header.Add("X-Sumo-Category", s.sumoCategory)
-	}
-	//checking the timer before first POST intent
-	for time.Since(s.timerBetweenPost) < s.sumoPostMinimumDelay {
-		logging.Trace.Println("Delaying Post because minimum post timer not expired")
-		time.Sleep(100 * time.Millisecond)
-	}
-	response, err := s.httpClient.Do(request)
-
-	if (err != nil) || (response.StatusCode != 200 && response.StatusCode != 302 && response.StatusCode < 500) {
-		logging.Info.Println("Endpoint dropped the post send")
-		logging.Info.Println("Waiting for 300 ms to retry")
-		time.Sleep(300 * time.Millisecond)
-		statusCode := 0
-		err := Retry(func(attempt int) (bool, error) {
-			var errRetry error
-			request, err := http.NewRequest("POST", s.sumoURL, &logStringToSend)
-			if err != nil {
-				logging.Error.Printf("http.NewRequest() error: %v\n", err)
-			}
-			request.Header.Add("Content-Type", "application/json")
-			request.Header.Add("Content-Encoding", "gzip")
-			request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
-
-			if s.sumoName != "" {
-				request.Header.Add("X-Sumo-Name", s.sumoName)
-			}
-			if s.sumoHost != "" {
-				request.Header.Add("X-Sumo-Host", s.sumoHost)
-			}
-			if s.sumoCategory != "" {
-				request.Header.Add("X-Sumo-Category", s.sumoCategory)
-			}
-			//checking the timer before POST (retry intent)
-			for time.Since(s.timerBetweenPost) < s.sumoPostMinimumDelay {
-				logging.Trace.Println("Delaying Post because minimum post timer not expired")
-				time.Sleep(100 * time.Millisecond)
-			}
-			response, errRetry = s.httpClient.Do(request)
-
-			if errRetry != nil {
-				logging.Error.Printf("http.Do() error: %v\n", errRetry)
-				logging.Info.Println("Waiting for 300 ms to retry after error")
-				time.Sleep(300 * time.Millisecond)
-				return attempt < 5, errRetry
-			} else if response.StatusCode != 200 && response.StatusCode != 302 && response.StatusCode < 500 {
-				logging.Info.Println("Endpoint dropped the post send again")
-				logging.Info.Println("Waiting for 300 ms to retry after a retry ...")
-				statusCode = response.StatusCode
-				time.Sleep(300 * time.Millisecond)
-				return attempt < 5, errRetry
-			} else if response.StatusCode == 200 {
-				logging.Trace.Println("Post of logs successful after retry...")
-				s.timerBetweenPost = time.Now()
-				statusCode = response.StatusCode
-				return true, err
-			}
-			return attempt < 5, errRetry
-		})
+	if logStringToSend != "" {
+		var buf bytes.Buffer
+		g := gzip.NewWriter(&buf)
+		g.Write([]byte(logStringToSend))
+		g.Close()
+		request, err := http.NewRequest("POST", s.sumoURL, &buf)
 		if err != nil {
-			logging.Error.Println("Error, Not able to post after retry")
-			logging.Error.Printf("http.Do() error: %v\n", err)
+			logging.Error.Printf("http.NewRequest() error: %v\n", err)
 			return
-		} else if statusCode != 200 {
-			logging.Error.Printf("Not able to post after retry, with status code: %d", statusCode)
 		}
-	} else if response.StatusCode == 200 {
-		logging.Trace.Println("Post of logs successful")
-		s.timerBetweenPost = time.Now()
-	}
+		request.Header.Add("Content-Encoding", "gzip")
+		request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
 
-	if response != nil {
-		defer response.Body.Close()
-	}
+		if s.sumoName != "" {
+			request.Header.Add("X-Sumo-Name", s.sumoName)
+		}
+		if s.sumoHost != "" {
+			request.Header.Add("X-Sumo-Host", s.sumoHost)
+		}
+		if s.sumoCategory != "" {
+			request.Header.Add("X-Sumo-Category", s.sumoCategory)
+		}
+		//checking the timer before first POST intent
+		for time.Since(s.timerBetweenPost) < s.sumoPostMinimumDelay {
+			logging.Trace.Println("Delaying Post because minimum post timer not expired")
+			time.Sleep(100 * time.Millisecond)
+		}
+		response, err := s.httpClient.Do(request)
 
+		if (err != nil) || (response.StatusCode != 200 && response.StatusCode != 302 && response.StatusCode < 500) {
+			logging.Info.Println("Endpoint dropped the post send")
+			logging.Info.Println("Waiting for 300 ms to retry")
+			time.Sleep(300 * time.Millisecond)
+			statusCode := 0
+			err := Retry(func(attempt int) (bool, error) {
+				var errRetry error
+				request, err := http.NewRequest("POST", s.sumoURL, &buf)
+				if err != nil {
+					logging.Error.Printf("http.NewRequest() error: %v\n", err)
+				}
+				request.Header.Add("Content-Encoding", "gzip")
+				request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
+
+				if s.sumoName != "" {
+					request.Header.Add("X-Sumo-Name", s.sumoName)
+				}
+				if s.sumoHost != "" {
+					request.Header.Add("X-Sumo-Host", s.sumoHost)
+				}
+				if s.sumoCategory != "" {
+					request.Header.Add("X-Sumo-Category", s.sumoCategory)
+				}
+				//checking the timer before POST (retry intent)
+				for time.Since(s.timerBetweenPost) < s.sumoPostMinimumDelay {
+					logging.Trace.Println("Delaying Post because minimum post timer not expired")
+					time.Sleep(100 * time.Millisecond)
+				}
+				response, errRetry = s.httpClient.Do(request)
+
+				if errRetry != nil {
+					logging.Error.Printf("http.Do() error: %v\n", errRetry)
+					logging.Info.Println("Waiting for 300 ms to retry after error")
+					time.Sleep(300 * time.Millisecond)
+					return attempt < 5, errRetry
+				} else if response.StatusCode != 200 && response.StatusCode != 302 && response.StatusCode < 500 {
+					logging.Info.Println("Endpoint dropped the post send again")
+					logging.Info.Println("Waiting for 300 ms to retry after a retry ...")
+					statusCode = response.StatusCode
+					time.Sleep(300 * time.Millisecond)
+					return attempt < 5, errRetry
+				} else if response.StatusCode == 200 {
+					logging.Trace.Println("Post of logs successful after retry...")
+					s.timerBetweenPost = time.Now()
+					statusCode = response.StatusCode
+					return true, err
+				}
+				return attempt < 5, errRetry
+			})
+			if err != nil {
+				logging.Error.Println("Error, Not able to post after retry")
+				logging.Error.Printf("http.Do() error: %v\n", err)
+				return
+			} else if statusCode != 200 {
+				logging.Error.Printf("Not able to post after retry, with status code: %d", statusCode)
+			}
+		} else if response.StatusCode == 200 {
+			logging.Trace.Println("Post of logs successful")
+			s.timerBetweenPost = time.Now()
+		}
+
+		if response != nil {
+			defer response.Body.Close()
+		}
+	}
 }
 
 //------------------Retry Logic Code-------------------------------

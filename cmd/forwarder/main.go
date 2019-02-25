@@ -98,7 +98,7 @@ func main() {
                 sClient.ProcessEvents(e.Value)
 
                 // Sent to SumoLogic
-                go sClient.SendLogs(e.Value)
+                go sClient.SendLogs(string(e.Value))
 
                 // commit offset (https://github.com/agis/confluent-kafka-go-GH64/blob/master/main.go)
                 tp := kafka.TopicPartition{
