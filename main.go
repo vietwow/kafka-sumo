@@ -5,9 +5,11 @@ import (
     "os"
     "os/signal"
     "github.com/confluentinc/confluent-kafka-go/kafka"
+    "io/ioutil"
     "time"
     "gopkg.in/alecthomas/kingpin.v2"
     "github.com/vietwow/kafka-sumo/sumologic"
+    "github.com/vietwow/kafka-sumo/logging"
 )
 
 var c *kafka.Consumer
