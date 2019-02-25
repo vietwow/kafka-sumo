@@ -91,7 +91,7 @@ func main() {
                     e.TopicPartition, string(e.Value))
 
                 // Sent to SumoLogic
-                formated := sClient.ProcessEvents(string(e.Value))
+                sClient.ProcessEvents(string(e.Value))
                 // go sClient.SendLogs(string(e.Value))
 
                 if e.Headers != nil {
