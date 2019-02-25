@@ -83,7 +83,7 @@ func (s *SumoLogic) ProcessEvents(msg []byte) {
     // }
 }
 
-func (s *SumoLogic) SendLogs(logStringToSend []byte]) {
+func (s *SumoLogic) SendLogs(logStringToSend []byte) {
 	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + s.sumoURL)
 
 	request, err := http.NewRequest("POST", s.sumoURL, &logStringToSend)
