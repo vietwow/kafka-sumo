@@ -64,7 +64,7 @@ type Log struct {
 func (s *SumoLogic) ProcessEvents(msg string) {
 	// https://github.com/lightstaff/confluent-kafka-go-example/blob/master/main.go
 	var log Log
-	if err := json.Unmarshal(msg.Value, &log); err != nil {
+	if err := json.Unmarshal(msg, &log); err != nil {
 		fmt.Println(err)
 	}
 	fmt.Printf("success parse consumed log : message: %s, timestamp: %d, Logplex.DrainID = %v\n", log.Message, log.Timestamp, log.LogplexDrainID)
