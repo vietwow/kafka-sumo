@@ -95,7 +95,7 @@ func main() {
                 }
 
                 // Parse the received msg
-                sClient.ProcessEvents(e.Value)
+                sClient.ProcessEvents(string(e.Value))
 
                 // Sent to SumoLogic
                 go sClient.SendLogs(string(e.Value))
