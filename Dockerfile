@@ -18,7 +18,8 @@ RUN curl https://glide.sh/get | sh
 WORKDIR /go/src/kafka-sumo
 ADD . /go/src/kafka-sumo
 
-RUN glide install && go install kafka-sumo
+#RUN glide install && go install kafka-sumo
+RUN ./build.sh
 
 # final stage
 FROM ubuntu
