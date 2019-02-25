@@ -1,0 +1,3 @@
+package: kafka-sumo
+import:
+- package: github.com/confluentinc/confluent-kafka-go/kafka
