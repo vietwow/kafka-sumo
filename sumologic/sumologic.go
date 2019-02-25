@@ -72,6 +72,8 @@ func (s *SumoLogic) ProcessEvents(msg string) string {
         fmt.Printf("Logplex.DrainID = %v, Message = %v", log[l].LogplexDrainID, log[l].Message)
         fmt.Println()
     }
+
+    return "Done"
 }
 
 func (s *SumoLogic) SendLogs(logStringToSend string) {
