@@ -113,6 +113,7 @@ func (s *SumoLogic) SendLogs(logStringToSend []byte) {
 
 	if (err != nil) || (response.StatusCode != 200 && response.StatusCode != 302 && response.StatusCode < 500) {
 		logging.Info.Println("Endpoint dropped the post send")
+		logging.Info.Printf("response.StatusCode is %v and err is %v\n", response.StatusCode, err.Error())
 		logging.Info.Println("Waiting for 300 ms to retry")
 		time.Sleep(300 * time.Millisecond)
 		statusCode := 0
