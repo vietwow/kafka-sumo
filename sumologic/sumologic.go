@@ -83,14 +83,10 @@ func (s *SumoLogic) ProcessEvents(msg []byte) {
     // }
 }
 
-func (s *SumoLogic) SendLogs(logStringToSend string) {
+func (s *SumoLogic) SendLogs(logStringToSend []byte]) {
 	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + s.sumoURL)
 	if logStringToSend != "" {
-		var buf bytes.Buffer
-		g := gzip.NewWriter(&buf)
-		g.Write([]byte(logStringToSend))
-		g.Close()
-		request, err := http.NewRequest("POST", s.sumoURL, &buf)
+		request, err := http.NewRequest("POST", s.sumoURL, &logStringToSend)
 		if err != nil {
 			logging.Error.Printf("http.NewRequest() error: %v\n", err)
 			return
@@ -121,7 +117,7 @@ func (s *SumoLogic) SendLogs(logStringToSend string) {
 			statusCode := 0
 			err := Retry(func(attempt int) (bool, error) {
 				var errRetry error
-				request, err := http.NewRequest("POST", s.sumoURL, &buf)
+				request, err := http.NewRequest("POST", s.sumoURL, &logStringToSend)
 				if err != nil {
 					logging.Error.Printf("http.NewRequest() error: %v\n", err)
 				}
