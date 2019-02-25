@@ -56,7 +56,7 @@ type Log struct {
 
 //FormatEvents
 //Format SlowLog Interface to flat string
-func (s *SumoLogic) ProcessEvents(msg string) string {
+func (s *SumoLogic) ProcessEvents(msg string) {
     // Get byte slice from string.
     bytes := []byte(msg)
 
