@@ -86,7 +86,7 @@ func (s *SumoLogic) ProcessEvents(msg []byte) {
 func (s *SumoLogic) SendLogs(logStringToSend []byte) {
 	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + s.sumoURL)
 
-	request, err := http.NewRequest("POST", s.sumoURL, bytes.NewBuffer(logStringToSend)
+	request, err := http.NewRequest("POST", s.sumoURL, bytes.NewBuffer(logStringToSend))
 	if err != nil {
 		logging.Error.Printf("http.NewRequest() error: %v\n", err)
 		return
