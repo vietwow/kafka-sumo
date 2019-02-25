@@ -16,7 +16,7 @@ RUN make install
 WORKDIR /go/src/kafka-sumo
 ADD . /go/src/kafka-sumo
 
-RUN ./build.sh
+RUN make build
 
 # final stage
 FROM ubuntu
