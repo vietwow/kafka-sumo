@@ -61,7 +61,7 @@ type Log struct {
 
 //ProcessEvents
 //Format SlowLog Interface to flat string
-func (s *SumoLogic) ProcessEvents(msg string) {
+func (s *SumoLogic) ProcessEvents(msg []byte) {
 	// https://github.com/lightstaff/confluent-kafka-go-example/blob/master/main.go
 	var log Log
 	if err := json.Unmarshal(msg, &log); err != nil {
