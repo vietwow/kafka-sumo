@@ -1,7 +1,7 @@
 .EXPORT_ALL_VARIABLES:
 BUILD_NUMBER = "1.0"
-SHA1 := $(git rev-parse HEAD)
-DATE := $(date +%Y_%m_%d)
+SHA1 = $(git rev-parse HEAD)
+DATE = $(date +%Y_%m_%d)
 
 all: update build test
 
