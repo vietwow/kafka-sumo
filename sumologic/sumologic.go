@@ -83,15 +83,18 @@ func (s *SumoLogic) ProcessEvents(msg []byte) {
     // }
 }
 
-func (s *SumoLogic) SendLogs(logStringToSend []byte]) {
+func (s *SumoLogic) SendLogs(logStringToSend string) {
 	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + s.sumoURL)
 	if logStringToSend != "" {
-		request, err := http.NewRequest("POST", s.sumoURL, &logStringToSend)
+		var buf bytes.Buffer
+		g := gzip.NewWriter(&buf)
+		g.Write([]byte(logStringToSend))
+		g.Close()
+		request, err := http.NewRequest("POST", s.sumoURL, &buf)
 		if err != nil {
 			logging.Error.Printf("http.NewRequest() error: %v\n", err)
 			return
 		}
-		request.Header.Add("Content-Type", "application/json")
 		request.Header.Add("Content-Encoding", "gzip")
 		request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
 
@@ -118,11 +121,10 @@ func (s *SumoLogic) SendLogs(logStringToSend []byte]) {
 			statusCode := 0
 			err := Retry(func(attempt int) (bool, error) {
 				var errRetry error
-				request, err := http.NewRequest("POST", s.sumoURL, &logStringToSend)
+				request, err := http.NewRequest("POST", s.sumoURL, &buf)
 				if err != nil {
 					logging.Error.Printf("http.NewRequest() error: %v\n", err)
 				}
-				request.Header.Add("Content-Type", "application/json")
 				request.Header.Add("Content-Encoding", "gzip")
 				request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
 
