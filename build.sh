@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 export ROOT_DIR=$PWD
 #export BUILD_NUMBER=`[ ${VERSION_APP} ] && cat ${VERSION_APP} || echo "0.0.0"`

@@ -13,8 +13,6 @@ RUN make
 
 RUN make install
 
-RUN curl https://glide.sh/get | sh
-
 WORKDIR /go/src/kafka-sumo
 ADD . /go/src/kafka-sumo
 

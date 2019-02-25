@@ -1,15 +1,13 @@
 FROM golang:alpine
 
 # Install OS-level dependencies.
-RUN apk update && apk add alpine-sdk curl git pkgconfig librdkafka librdkafka-dev && curl https://glide.sh/get | sh
+RUN apk update && apk add alpine-sdk curl git pkgconfig librdkafka librdkafka-dev
 
 # Copy our source code into the container.
 WORKDIR /go/src/kafka-sumo
 ADD . /go/src/kafka-sumo
 
-# Install our golang dependencies and compile our binary.
-RUN glide install
-RUN go install kafka-sumo
+RUN ./build.sh
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
