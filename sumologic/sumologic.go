@@ -1,7 +1,7 @@
 package sumologic
 
 import (
-	// "bytes"
+	"bytes"
 	// "compress/gzip"
 	"encoding/json"
 	"fmt"
