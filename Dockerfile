@@ -10,7 +10,7 @@ RUN apk add --update --no-cache alpine-sdk bash ca-certificates \
 WORKDIR /go/src/kafka-sumo
 ADD . /go/src/kafka-sumo
 
-RUN ./build.sh
+RUN make build
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates librdkafka

@@ -1,25 +1,15 @@
 .EXPORT_ALL_VARIABLES:
-VERSION := $(shell git describe --always --tags)
-DATE := $(shell date -u +%Y%m%d.%H%M%S)
-LDFLAGS := -ldflags "-X=main.version=$(VERSION)-$(DATE)"
-CGO_ENABLED=0
-GOOS=linux
-GOARCH=amd64
-PROJECT = mysuperproject
-...
+BUILD_NUMBER = "1.0"
+SHA1 := $(git rev-parse HEAD)
+DATE := $(date +%Y_%m_%d)
 
-GO=GO111MODULE=on go
-
-all: update generate bench test
+all: update build test
 
 update:
-	cd confluent && $(GO) mod vendor
+	go mod vendor
 
-generate:
-	cd confluent && $(GO) generate -mod=vendor
-
-bench: 
-	cd confluent && $(GO) test -mod=vendor -bench=.
+build:
+	GO111MODULE=on GOOS=linux go build '-mod=vendor'  -ldflags  " -X main.version=$BUILD_NUMBER -X main.commit_sha1=$SHA1 -X main.builddate=$DATE " -a -installsuffix cgo -o /go/bin/kafka-sumo ./cmd/forwarder/
 
 test:
-	cd confluent && $(GO) test
+	go test
