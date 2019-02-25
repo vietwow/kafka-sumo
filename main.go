@@ -24,6 +24,9 @@ func main() {
     kingpin.Version(version)
     kingpin.Parse()
 
+    //logging init
+    logging.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr, logging.SliceToLevels(*logs))
+
     sClient := sumologic.NewSumoLogic(
         *sURL,
         *sSourceHost,

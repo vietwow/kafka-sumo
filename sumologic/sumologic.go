@@ -154,8 +154,8 @@ func (s *SumoLogic) SendLogs(logStringToSend string) {
 			}
 		} else if response.StatusCode == 200 {
 			// logging.Trace.Println("Post of logs successful")
-			logging.Info.Println("dc roai")
-			// logging.Error.Println("dc roai")
+			// logging.Info.Println("dc roai")
+			logging.Error.Println("dc roai")
 			fmt.Println("Post of logs successful")
 			s.timerBetweenPost = time.Now()
 		}
