@@ -1,8 +1,8 @@
 package sumologic
 
 import (
-	// "bytes"
-	// "compress/gzip"
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"errors"
@@ -83,15 +83,18 @@ func (s *SumoLogic) ProcessEvents(msg []byte) {
     // }
 }
 
-func (s *SumoLogic) SendLogs(logStringToSend []byte) {
+func (s *SumoLogic) SendLogs(logStringToSend string) {
 	logging.Trace.Println("Attempting to send to Sumo Endpoint: " + s.sumoURL)
-	if len(logStringToSend) != 0 {
-		request, err := http.NewRequest("POST", s.sumoURL, string(logStringToSend))
+	if logStringToSend != "" {
+		var buf bytes.Buffer
+		g := gzip.NewWriter(&buf)
+		g.Write([]byte(logStringToSend))
+		g.Close()
+		request, err := http.NewRequest("POST", s.sumoURL, &buf)
 		if err != nil {
 			logging.Error.Printf("http.NewRequest() error: %v\n", err)
 			return
 		}
-		// request.Header.Set("Content-Type", "application/json")
 		request.Header.Add("Content-Encoding", "gzip")
 		request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
 
@@ -113,17 +116,15 @@ func (s *SumoLogic) SendLogs(logStringToSend []byte) {
 
 		if (err != nil) || (response.StatusCode != 200 && response.StatusCode != 302 && response.StatusCode < 500) {
 			logging.Info.Println("Endpoint dropped the post send")
-			logging.Info.Printf("response.StatusCode is %v and err is %v\n", response.StatusCode, err)
 			logging.Info.Println("Waiting for 300 ms to retry")
 			time.Sleep(300 * time.Millisecond)
 			statusCode := 0
 			err := Retry(func(attempt int) (bool, error) {
 				var errRetry error
-				request, err := http.NewRequest("POST", s.sumoURL, string(logStringToSend))
+				request, err := http.NewRequest("POST", s.sumoURL, &buf)
 				if err != nil {
 					logging.Error.Printf("http.NewRequest() error: %v\n", err)
 				}
-				// request.Header.Set("Content-Type", "application/json")
 				request.Header.Add("Content-Encoding", "gzip")
 				request.Header.Add("X-Sumo-Client", "redis-forwarder v"+s.forwarderVersion)
 
@@ -171,7 +172,6 @@ func (s *SumoLogic) SendLogs(logStringToSend []byte) {
 			}
 		} else if response.StatusCode == 200 {
 			logging.Trace.Println("Post of logs successful")
-			logging.Info.Println("Post of logs successful")
 			s.timerBetweenPost = time.Now()
 		}
 
