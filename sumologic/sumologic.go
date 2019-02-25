@@ -63,9 +63,6 @@ func (s *SumoLogic) ProcessEvents(msg string) string {
 	// Unmarshal string into structs.
 	var log []Log
     json.Unmarshal(bytes, &log)
-	if err != nil {
-		fmt.Println("error:", err)
-	}
 
     // Loop over structs and display them.
     for l := range log {
