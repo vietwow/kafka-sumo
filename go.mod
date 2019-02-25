@@ -8,4 +8,5 @@ require (
 	github.com/stretchr/testify v1.2.2
 	golang.org/x/net v0.0.0-20181207154023-610586996380 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
+	github.com/confluentinc/confluent-kafka-go/kafka v0.0.0-20190126192635-4b40d3d34466
 )
