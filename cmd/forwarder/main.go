@@ -90,12 +90,26 @@ func main() {
                 fmt.Printf("%% Message on %s:\n%s\n",
                     e.TopicPartition, string(e.Value))
 
-                // Sent to SumoLogic
-                sClient.ProcessEvents(string(e.Value))
-                // go sClient.SendLogs(string(e.Value))
-
                 if e.Headers != nil {
                     fmt.Printf("%% Headers: %v\n", e.Headers)
+                }
+
+                // Parse the received msg
+                sClient.ProcessEvents(e.Value)
+
+                // Sent to SumoLogic
+                // go sClient.SendLogs(string(e.Value))
+
+                // commit offset (https://github.com/agis/confluent-kafka-go-GH64/blob/master/main.go)
+                tp := kafka.TopicPartition{
+                    Topic:     e.TopicPartition.Topic,
+                    Partition: 0,
+                    Offset:    e.TopicPartition.Offset + 1,
+                }
+
+                _, err = c.CommitOffsets([]kafka.TopicPartition{tp})
+                if err != nil {
+                    fmt.Print(err)
                 }
             case kafka.Error:
                 // Errors should generally be considered as informational, the client will try to automatically recover
