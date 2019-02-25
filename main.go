@@ -7,6 +7,7 @@ import (
     "github.com/confluentinc/confluent-kafka-go/kafka"
     "io/ioutil"
     "time"
+    "strings"
     "gopkg.in/alecthomas/kingpin.v2"
     "github.com/vietwow/kafka-sumo/sumologic"
     "github.com/vietwow/kafka-sumo/logging"
