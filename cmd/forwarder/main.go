@@ -52,6 +52,7 @@ func main() {
     c, err = kafka.NewConsumer(&kafka.ConfigMap{
         "bootstrap.servers":  broker,
         "group.id":           group,
+        "enable.auto.commit": false,
         "auto.offset.reset":  "earliest"})
 
     if err != nil {
@@ -100,7 +101,7 @@ func main() {
                 // Sent to SumoLogic
                 go sClient.SendLogs(e.Value)
 
-                // commit offset (https://github.com/agis/confluent-kafka-go-GH64/blob/master/main.go)
+                // commit offset (using when setting "enable.auto.commit" is false - https://github.com/agis/confluent-kafka-go-GH64/blob/master/main.go)
                 tp := kafka.TopicPartition{
                     Topic:     e.TopicPartition.Topic,
                     Partition: 0,
