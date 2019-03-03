@@ -19,7 +19,7 @@ type MessageConsumer struct {
     DeliveredCount int64
 }
 
-func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (confluent.MessageConsumer, error) {
+func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (MessageConsumer, error) {
     return newMessageConsumer(sClient)
 }
 
