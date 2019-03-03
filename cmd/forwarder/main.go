@@ -47,7 +47,7 @@ func main() {
     // create topic
     kafka.CreateCompactTopic(broker,topic,0,1)
 
-    c := kafka.newMessageConsumer(topic, broker, group)
+    c := kafka.NewConsumer(topic, broker, group)
     c.ProcessMessage(sClient)
     c.Close()
 }

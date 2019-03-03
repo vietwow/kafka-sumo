@@ -19,6 +19,10 @@ type MessageConsumer struct {
     DeliveredCount int64
 }
 
+func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (kafka.MessageConsumer, error) {
+    return newMessageConsumer(sClient *sumologic.SumoLogic)
+}
+
 func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
     // Initialize kafka consumer
     fmt.Printf("Creating consumer to broker %v with group %v\n", broker, group)
