@@ -20,7 +20,7 @@ type MessageConsumer struct {
 }
 
 func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (*MessageConsumer, error) {
-    return newMessageConsumer(sClient)
+    return newMessageConsumer(sClient), nil
 }
 
 func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
