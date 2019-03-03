@@ -87,6 +87,7 @@ func (c *kafka.Consumer) ProcessMessage(sClient *SumoLogic) error {
                 fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
             default:
                 fmt.Printf("Ignored %v\n", e)
+                return nil
             }
         }
     }

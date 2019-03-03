@@ -8,8 +8,7 @@ import (
 )
 
 // CreateCompactTopic creates a topic that is used as state store
-func CreateCompactTopic(topic string, numPartitions int, replicationFactor int) error {
-    broker := os.Getenv("BROKER") // kafka:29092
+func CreateCompactTopic(broker string, topic string, numPartitions int, replicationFactor int) error {
 
     adminClient, err := kafka.NewAdminClient(
         &kafka.ConfigMap{

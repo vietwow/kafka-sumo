@@ -45,7 +45,7 @@ func main() {
     group := os.Getenv("GROUP") // myGroup
 
     // create topic
-    CreateCompactTopic(topic,0,1)
+    CreateCompactTopic(broker,topic,0,1)
 
     c = kafka.newMessageConsumer(topic, broker, group)
     c.ProcessMessage(sClient)
