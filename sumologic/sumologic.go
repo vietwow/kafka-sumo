@@ -3,7 +3,7 @@ package sumologic
 import (
 	"bytes"
 	// "compress/gzip"
-	"fmt"
+	// "fmt"
 	"errors"
 	"net/http"
 	"time"
