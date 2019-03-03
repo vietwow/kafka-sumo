@@ -20,7 +20,7 @@ type MessageConsumer struct {
 }
 
 func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (kafka.MessageConsumer, error) {
-    return newMessageConsumer(sClient *sumologic.SumoLogic)
+    return newMessageConsumer(sClient)
 }
 
 func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
