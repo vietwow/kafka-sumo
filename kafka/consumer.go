@@ -7,7 +7,7 @@ import (
     "github.com/confluentinc/confluent-kafka-go/kafka"
     // "io/ioutil"
     // "github.com/vietwow/kafka-sumo/logging"
-    "github.com/vietwow/kafka-sumo/sumologic"
+    // "github.com/vietwow/kafka-sumo/sumologic"
 )
 
 func newMessageConsumer(topic string, broker string, group string) (*kafka.Consumer, error) {
@@ -23,7 +23,7 @@ func newMessageConsumer(topic string, broker string, group string) (*kafka.Consu
         "auto.offset.reset":  "earliest"})
 
     if err != nil {
-        return nil, fmt.Printf("cannot create kafka consumer error [%#v]", err)
+        return nil, fmt.Errorf("cannot create kafka consumer error [%#v]", err)
     }
 
     fmt.Printf("=> Created Consumer %v\n", c)
@@ -94,5 +94,5 @@ func (c *kafka.Consumer) ProcessMessage(sClient *SumoLogic) error {
 
 //Close close the consumer
 func (c *kafka.Consumer) Close() {
-    c.Consumer.Close()
+    c.Close()
 }
