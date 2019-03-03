@@ -5,12 +5,12 @@ import (
     "os"
     "os/signal"
     "github.com/confluentinc/confluent-kafka-go/kafka"
-    "io/ioutil"
+    // "io/ioutil"
     "github.com/vietwow/kafka-sumo/logging"
     "github.com/vietwow/kafka-sumo/sumologic"
 )
 
-func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
+func newMessageConsumer(topic string, broker string, group string) (*kafka.Consumer, error) {
     // Initialize kafka consumer
     fmt.Printf("Creating consumer to broker %v with group %v\n", broker, group)
 
@@ -23,14 +23,14 @@ func newMessageConsumer(topic string, broker string, group string) (*MessageCons
         "auto.offset.reset":  "earliest"})
 
     if err != nil {
-        return nil, logging.Error.Printf("cannot create kafka consumer error [%#v]", err)
+        return nil, fmt.Printf("cannot create kafka consumer error [%#v]", err)
     }
 
     fmt.Printf("=> Created Consumer %v\n", c)
 
     err = c.SubscribeTopics([]string{topic}, nil)
     if err != nil {
-        return nil, logging.Error.Printf("Unable to subscribe to topic " + topic + " due to error - " + err.Error())
+        return nil, fmt.Printf("Unable to subscribe to topic " + topic + " due to error - " + err.Error())
     } else {
         fmt.Println("=> Subscribed to topic :", topic)
     }
@@ -38,16 +38,7 @@ func newMessageConsumer(topic string, broker string, group string) (*MessageCons
     return &c, nil
 }
 
-func (c *MessageConsumer) ProcessMessage() error {
-    // Init sumologic client
-    sClient := sumologic.NewSumoLogic(
-        *URL,
-        *SourceHost,
-        *SourceName,
-        *SourceCategory,
-        version,
-        2*time.Second)
-
+func (c *kafka.Consumer) ProcessMessage(sClient *sumologic) error {
     sigchan := make(chan os.Signal, 1)
     signal.Notify(sigchan, os.Interrupt)
 
@@ -102,6 +93,6 @@ func (c *MessageConsumer) ProcessMessage() error {
 }
 
 //Close close the consumer
-func (c *MessageConsumer) Close() {
+func (c *kafka.Consumer) Close() {
     c.Consumer.Close()
 }

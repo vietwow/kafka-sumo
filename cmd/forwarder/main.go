@@ -14,10 +14,10 @@ import (
 )
 
 var (
-    URL             = kingpin.Flag("sumologic.url", "SumoLogic Collector URL as give by SumoLogic").Required().Envar("SUMOLOGIC_URL").String()
-    SourceCategory  = kingpin.Flag("sumologic.source.category", "Override default Source Category").Envar("SUMOLOGIC_CAT").Default("").String()
-    SourceName      = kingpin.Flag("sumologic.source.name", "Override default Source Name").Default("").String()
-    SourceHost      = kingpin.Flag("sumologic.source.host", "Override default Source Host").Default("").String()
+    sURL             = kingpin.Flag("sumologic.url", "SumoLogic Collector URL as give by SumoLogic").Required().Envar("SUMOLOGIC_URL").String()
+    sSourceCategory  = kingpin.Flag("sumologic.source.category", "Override default Source Category").Envar("SUMOLOGIC_CAT").Default("").String()
+    sSourceName      = kingpin.Flag("sumologic.source.name", "Override default Source Name").Default("").String()
+    sSourceHost      = kingpin.Flag("sumologic.source.host", "Override default Source Host").Default("").String()
     version          = "0.0.0"
 
     logs     = kingpin.Flag("log", logsHelp).Short('l').Default(logging.LevelsInSlice[3], logging.LevelsInSlice[1]).Enums(logging.LevelsInSlice[0:]...)
@@ -31,6 +31,15 @@ func main() {
     //logging init
     logging.Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr, logging.SliceToLevels(*logs))
 
+    // Init sumologic client
+    sClient := sumologic.NewSumoLogic(
+        *URL,
+        *SourceHost,
+        *SourceName,
+        *SourceCategory,
+        version,
+        2*time.Second)
+
     topic := os.Getenv("TOPIC") // heroku_logs
     broker := os.Getenv("BROKER") // kafka:29092
     group := os.Getenv("GROUP") // myGroup
@@ -39,6 +48,6 @@ func main() {
     CreateCompactTopic(topic,0,1)
 
     c = kafka.newMessageConsumer(topic, broker, group)
-    c.ProcessMessage()
+    c.ProcessMessage(sClient)
     c.Close()
 }
