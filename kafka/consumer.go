@@ -30,12 +30,12 @@ func newMessageConsumer(topic string, broker string, group string) (*kafka.Consu
 
     err = c.SubscribeTopics([]string{topic}, nil)
     if err != nil {
-        return nil, fmt.Println("Unable to subscribe to topic " + topic + " due to error - " + err.Error())
+        return nil, fmt.Errorf("cannot subcribe to topic [%s] error [%#v]", topic, err)
     } else {
         fmt.Println("=> Subscribed to topic :", topic)
     }
 
-    return &c, nil
+    return c, nil
 }
 
 func (c *kafka.Consumer) ProcessMessage(sClient *SumoLogic) error {
