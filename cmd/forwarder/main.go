@@ -52,7 +52,6 @@ func main() {
     c, err = kafka.NewConsumer(&kafka.ConfigMap{
         "bootstrap.servers":  broker,
         "group.id":           group,
-        "enable.auto.commit": false,
         "auto.offset.reset":  "earliest"})
 
     if err != nil {
@@ -88,10 +87,9 @@ func main() {
 
             switch e := ev.(type) {
             case *kafka.Message:
-                //fmt.Printf("%% Message on %s:\n%s\n",
-                //    e.TopicPartition, string(e.Value))
-                fmt.Printf("Received message to topic %s [%d] at offset %v\n",
-                    e.TopicPartition.Topic, e.TopicPartition.Partition, e.TopicPartition.Offset)
+                fmt.Printf("%% Message on %s:\n%s\n",
+                    e.TopicPartition, string(e.Value))
+
                 if e.Headers != nil {
                     fmt.Printf("%% Headers: %v\n", e.Headers)
                 }
@@ -102,7 +100,7 @@ func main() {
                 // Sent to SumoLogic
                 go sClient.SendLogs(e.Value)
 
-                // commit offset (using when setting "enable.auto.commit" is false - https://github.com/agis/confluent-kafka-go-GH64/blob/master/main.go)
+                // commit offset (https://github.com/agis/confluent-kafka-go-GH64/blob/master/main.go)
                 tp := kafka.TopicPartition{
                     Topic:     e.TopicPartition.Topic,
                     Partition: 0,
@@ -117,7 +115,6 @@ func main() {
                 // Errors should generally be considered as informational, the client will try to automatically recover
                 fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
             default:
-                //other kafka message types are ignored
                 fmt.Printf("Ignored %v\n", e)
             }
         }
