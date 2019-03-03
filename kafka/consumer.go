@@ -6,7 +6,7 @@ import (
     "os/signal"
     "github.com/confluentinc/confluent-kafka-go/kafka"
     // "io/ioutil"
-    "github.com/vietwow/kafka-sumo/logging"
+    // "github.com/vietwow/kafka-sumo/logging"
     "github.com/vietwow/kafka-sumo/sumologic"
 )
 
@@ -16,7 +16,7 @@ func newMessageConsumer(topic string, broker string, group string) (*kafka.Consu
 
     var c *kafka.Consumer
     var err error
-    c, err  = kafka.NewConsumer(&kafka.ConfigMap{
+    c, err = kafka.NewConsumer(&kafka.ConfigMap{
         "bootstrap.servers":  broker,
         "group.id":           group,
         "enable.auto.commit": false,
@@ -30,7 +30,7 @@ func newMessageConsumer(topic string, broker string, group string) (*kafka.Consu
 
     err = c.SubscribeTopics([]string{topic}, nil)
     if err != nil {
-        return nil, fmt.Printf("Unable to subscribe to topic " + topic + " due to error - " + err.Error())
+        return nil, fmt.Println("Unable to subscribe to topic " + topic + " due to error - " + err.Error())
     } else {
         fmt.Println("=> Subscribed to topic :", topic)
     }
@@ -38,7 +38,7 @@ func newMessageConsumer(topic string, broker string, group string) (*kafka.Consu
     return &c, nil
 }
 
-func (c *kafka.Consumer) ProcessMessage(sClient *sumologic) error {
+func (c *kafka.Consumer) ProcessMessage(sClient *SumoLogic) error {
     sigchan := make(chan os.Signal, 1)
     signal.Notify(sigchan, os.Interrupt)
 
@@ -78,7 +78,7 @@ func (c *kafka.Consumer) ProcessMessage(sClient *sumologic) error {
                     Offset:    e.TopicPartition.Offset + 1,
                 }
 
-                _, err = c.CommitOffsets([]kafka.TopicPartition{tp})
+                _, err := c.CommitOffsets([]kafka.TopicPartition{tp})
                 if err != nil {
                     fmt.Print(err)
                 }
