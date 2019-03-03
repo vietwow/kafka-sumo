@@ -88,7 +88,7 @@ func (c *MessageConsumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
                     Offset:    e.TopicPartition.Offset + 1,
                 }
 
-                _, err := c.CommitOffsets([]kafka.TopicPartition{tp})
+                _, err := c.Consumer.CommitOffsets([]kafka.TopicPartition{tp})
                 if err != nil {
                     fmt.Print(err)
                 }
