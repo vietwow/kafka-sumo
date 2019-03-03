@@ -84,7 +84,7 @@ func main() {
     group := os.Getenv("GROUP") // myGroup
 
     // create topic
-    CreateCompactTopic(topic,1,1)
+    CreateCompactTopic(topic,0,1)
 
     // Initialize kafka consumer
     fmt.Printf("Creating consumer to broker %v with group %v\n", broker, group)
