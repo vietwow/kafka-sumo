@@ -45,7 +45,7 @@ func newMessageConsumer(topic string, broker string, group string) (*MessageCons
         fmt.Println("=> Subscribed to topic :", topic)
     }
 
-    return c, nil
+    return &c, nil
 }
 
 func (c *MessageConsumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
