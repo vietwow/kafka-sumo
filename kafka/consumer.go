@@ -10,11 +10,12 @@ import (
     "github.com/vietwow/kafka-sumo/sumologic"
 )
 
+var c *kafka.Consumer
+
 func newMessageConsumer(topic string, broker string, group string) (*kafka.Consumer, error) {
     // Initialize kafka consumer
     fmt.Printf("Creating consumer to broker %v with group %v\n", broker, group)
 
-    var c *kafka.Consumer
     var err error
     c, err = kafka.NewConsumer(&kafka.ConfigMap{
         "bootstrap.servers":  broker,
