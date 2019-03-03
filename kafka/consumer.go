@@ -10,14 +10,23 @@ import (
     "github.com/vietwow/kafka-sumo/sumologic"
 )
 
-var c *kafka.Consumer
+type MessageConsumer struct {
+    // Topic          string
+    // ClientID       string
+    Consumer       *kafka.Consumer
+    FailedCount    int64
+    IgnoredCount   int64
+    DeliveredCount int64
+}
 
-func newMessageConsumer(topic string, broker string, group string) (*kafka.Consumer, error) {
+func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
     // Initialize kafka consumer
     fmt.Printf("Creating consumer to broker %v with group %v\n", broker, group)
 
+    c := MessageConsumer{}
+    // var c *kafka.Consumer
     var err error
-    c, err = kafka.NewConsumer(&kafka.ConfigMap{
+    c.Consumer, err = kafka.NewConsumer(&kafka.ConfigMap{
         "bootstrap.servers":  broker,
         "group.id":           group,
         "enable.auto.commit": false,
@@ -39,7 +48,7 @@ func newMessageConsumer(topic string, broker string, group string) (*kafka.Consu
     return c, nil
 }
 
-func (c *kafka.Consumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
+func (c *MessageConsumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
     sigchan := make(chan os.Signal, 1)
     signal.Notify(sigchan, os.Interrupt)
 
@@ -96,6 +105,6 @@ func (c *kafka.Consumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
 }
 
 //Close close the consumer
-func (c *kafka.Consumer) Close() {
+func (c *MessageConsumer) Close() {
     c.Close()
 }
