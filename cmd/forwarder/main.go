@@ -88,9 +88,10 @@ func main() {
 
             switch e := ev.(type) {
             case *kafka.Message:
-                fmt.Printf("%% Message on %s:\n%s\n",
-                    e.TopicPartition, string(e.Value))
-
+                //fmt.Printf("%% Message on %s:\n%s\n",
+                //    e.TopicPartition, string(e.Value))
+                fmt.Printf("Received message to topic %s [%d] at offset %v\n",
+                    e.TopicPartition.Topic, e.TopicPartition.Partition, e.TopicPartition.Offset)
                 if e.Headers != nil {
                     fmt.Printf("%% Headers: %v\n", e.Headers)
                 }
@@ -115,7 +116,11 @@ func main() {
             case kafka.Error:
                 // Errors should generally be considered as informational, the client will try to automatically recover
                 fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
+            case nil:
+                //polling just indicated that there is no message
+                return nil
             default:
+                //other kafka message types are ignored
                 fmt.Printf("Ignored %v\n", e)
             }
         }
