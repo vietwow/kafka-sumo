@@ -5,7 +5,7 @@ import (
     "os"
     "os/signal"
     "github.com/confluentinc/confluent-kafka-go/kafka"
-    "http"
+    "net/http" // hack temp
     "time"
     // "io/ioutil"
     // "github.com/vietwow/kafka-sumo/logging"
