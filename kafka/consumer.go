@@ -5,25 +5,11 @@ import (
     "os"
     "os/signal"
     "github.com/confluentinc/confluent-kafka-go/kafka"
-    "net/http" // hack temp
     "time"
     // "io/ioutil"
     // "github.com/vietwow/kafka-sumo/logging"
-    // "github.com/vietwow/kafka-sumo/sumologic"
+    "github.com/vietwow/kafka-sumo/sumologic"
 )
-
-// hack temp
-type SumoLogic struct {
-    httpClient           http.Client
-    forwarderVersion     string
-    sumoCategory         string
-    sumoName             string
-    sumoHost             string
-    sumoURL              string
-    sumoPostMinimumDelay time.Duration
-    timerBetweenPost     time.Time
-    customMetadata       string
-}
 
 func newMessageConsumer(topic string, broker string, group string) (*kafka.Consumer, error) {
     // Initialize kafka consumer
