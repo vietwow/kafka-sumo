@@ -116,9 +116,6 @@ func main() {
             case kafka.Error:
                 // Errors should generally be considered as informational, the client will try to automatically recover
                 fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
-            case nil:
-                //polling just indicated that there is no message
-                return nil
             default:
                 //other kafka message types are ignored
                 fmt.Printf("Ignored %v\n", e)
