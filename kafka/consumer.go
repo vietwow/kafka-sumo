@@ -61,7 +61,7 @@ func (c *MessageConsumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
             fmt.Printf("Caught signal %v: terminating\n", sig)
             run = false
         default:
-            ev := c.Poll(100)
+            ev := c.Consumer.Poll(100)
             if ev == nil {
                 continue
             }
