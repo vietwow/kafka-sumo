@@ -5,6 +5,8 @@ import (
     "os"
     "os/signal"
     "github.com/confluentinc/confluent-kafka-go/kafka"
+    "http"
+    "time"
     // "io/ioutil"
     // "github.com/vietwow/kafka-sumo/logging"
     // "github.com/vietwow/kafka-sumo/sumologic"
