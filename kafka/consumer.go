@@ -38,7 +38,7 @@ func newMessageConsumer(topic string, broker string, group string) (*MessageCons
 
     fmt.Printf("=> Created Consumer %v\n", c)
 
-    err = c.SubscribeTopics([]string{topic}, nil)
+    err = c.Consumer.SubscribeTopics([]string{topic}, nil)
     if err != nil {
         return nil, fmt.Errorf("cannot subcribe to topic [%s] error [%#v]", topic, err)
     } else {
