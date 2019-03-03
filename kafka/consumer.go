@@ -1,4 +1,4 @@
-package kafka
+package confluent
 
 import (
     "fmt"
@@ -19,7 +19,7 @@ type MessageConsumer struct {
     DeliveredCount int64
 }
 
-func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (kafka.MessageConsumer, error) {
+func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (confluent.MessageConsumer, error) {
     return newMessageConsumer(sClient)
 }
 

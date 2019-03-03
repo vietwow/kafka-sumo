@@ -45,9 +45,9 @@ func main() {
     group := os.Getenv("GROUP") // myGroup
 
     // create topic
-    kafka.CreateCompactTopic(broker,topic,0,1)
+    confluent.CreateCompactTopic(broker,topic,0,1)
 
-    c := kafka.NewConsumer(topic, broker, group)
+    c := confluent.NewConsumer(topic, broker, group)
     c.ProcessMessage(sClient)
     c.Close()
 }
