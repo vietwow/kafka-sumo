@@ -33,10 +33,10 @@ func main() {
 
     // Init sumologic client
     sClient := sumologic.NewSumoLogic(
-        *URL,
-        *SourceHost,
-        *SourceName,
-        *SourceCategory,
+        *sURL,
+        *sSourceHost,
+        *sSourceName,
+        *sSourceCategory,
         version,
         2*time.Second)
 
@@ -47,7 +47,7 @@ func main() {
     // create topic
     CreateCompactTopic(broker,topic,0,1)
 
-    c = kafka.newMessageConsumer(topic, broker, group)
+    c := kafka.newMessageConsumer(topic, broker, group)
     c.ProcessMessage(sClient)
     c.Close()
 }
