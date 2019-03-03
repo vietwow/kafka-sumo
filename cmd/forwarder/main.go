@@ -11,8 +11,46 @@ import (
     "gopkg.in/alecthomas/kingpin.v2"
     "github.com/vietwow/kafka-sumo/sumologic"
     "github.com/vietwow/kafka-sumo/logging"
+    "context"
 )
 
+
+// CreateCompactTopic creates a topic that is used as state store
+func CreateCompactTopic(topic string, numPartitions int, replicationFactor int) error {
+    broker := os.Getenv("BROKER") // kafka:29092
+
+    adminClient, err := kafka.NewAdminClient(
+        &kafka.ConfigMap{
+            "bootstrap.servers": broker,
+        },
+    )
+    if err != nil {
+        return fmt.Errorf("cannot create admin client from producer [%#v]", err)
+    }
+    ctx, cancel := context.WithCancel(context.Background())
+    defer cancel()
+    result, err := adminClient.CreateTopics(
+        ctx,
+        []kafka.TopicSpecification{
+            kafka.TopicSpecification{
+                Topic: topic,
+                Config: map[string]string{
+                    "cleanup.policy": "compact",
+                },
+                ReplicationFactor: replicationFactor,
+                NumPartitions:     numPartitions,
+            },
+        })
+    if err != nil && result != nil {
+        if result[0].Error.Code() == kafka.ErrTopicAlreadyExists {
+            return nil
+        }
+    }
+
+    return err
+}
+
+// Main part
 var c *kafka.Consumer
 
 var (
@@ -44,6 +82,9 @@ func main() {
     topic := os.Getenv("TOPIC") // heroku_logs
     broker := os.Getenv("BROKER") // kafka:29092
     group := os.Getenv("GROUP") // myGroup
+
+    // create topic
+    CreateCompactTopic(topic,1,1)
 
     // Initialize kafka consumer
     fmt.Printf("Creating consumer to broker %v with group %v\n", broker, group)
