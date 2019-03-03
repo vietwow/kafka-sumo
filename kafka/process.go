@@ -11,7 +11,7 @@ import (
 
 */
 
-type log struct {
+type Log struct {
     Timestamp       int64     `json:"Timestamp"`
     SyslogPri       string    `json:"Syslog.pri"`
     SyslogTimestamp time.Time `json:"Syslog.timestamp"`
