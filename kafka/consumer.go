@@ -12,6 +12,7 @@ import (
     // "github.com/vietwow/kafka-sumo/sumologic"
 )
 
+// hack temp
 type SumoLogic struct {
     httpClient           http.Client
     forwarderVersion     string
