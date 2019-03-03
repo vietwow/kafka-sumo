@@ -38,7 +38,7 @@ func newMessageConsumer(topic string, broker string, group string) (*kafka.Consu
     return c, nil
 }
 
-func (c *kafka.Consumer) ProcessMessage(sClient *SumoLogic) error {
+func (c *kafka.Consumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
     sigchan := make(chan os.Signal, 1)
     signal.Notify(sigchan, os.Interrupt)
 
