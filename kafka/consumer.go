@@ -7,7 +7,7 @@ import (
     "github.com/confluentinc/confluent-kafka-go/kafka"
     // "io/ioutil"
     // "github.com/vietwow/kafka-sumo/logging"
-    // "github.com/vietwow/kafka-sumo/sumologic"
+    "github.com/vietwow/kafka-sumo/sumologic"
 )
 
 func newMessageConsumer(topic string, broker string, group string) (*kafka.Consumer, error) {
