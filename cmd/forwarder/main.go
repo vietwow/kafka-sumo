@@ -47,7 +47,10 @@ func main() {
     // create topic
     confluent.CreateCompactTopic(broker,topic,0,1)
 
-    c := confluent.NewConsumer(topic, broker, group)
+    c, err := confluent.NewConsumer(topic, broker, group)
+    if err != nil {
+        logging.Panic(err)
+    }
     c.ProcessMessage(sClient)
     c.Close()
 }
