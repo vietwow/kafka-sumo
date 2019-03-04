@@ -22,19 +22,22 @@ type messageConsumerOptions struct {
 
 func(messageConsumerOptions) Topic(topic string) MessageConsumerOption {
     return func(o *messageConsumerOptions) error {
-        o.topic = topic 
+        o.topic = topic
+        return nil
     }
 }
 
 func(messageConsumerOptions) Broker(broker string) MessageConsumerOption {
     return func(o *messageConsumerOptions) error {
-        o.broker = broker 
+        o.broker = broker
+        return nil
     }
 }
 
 func(messageConsumerOptions) Group(group string) MessageConsumerOption {
     return func(o *messageConsumerOptions) error {
-        o.group = group 
+        o.group = group
+        return nil
     }
 }
 
