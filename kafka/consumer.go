@@ -59,7 +59,7 @@ func NewConsumer(opts ...MessageConsumerOption) (*MessageConsumer, error) {
 func newMessageConsumer(opts ...MessageConsumerOption) (*MessageConsumer, error) {
     args := messageConsumerOptions{}
     for _, opt := range opts {
-        if err := opt(args); err != nil {
+        if err := opt(&args); err != nil {
             return nil, err
         }
     }
