@@ -74,7 +74,7 @@ func newMessageConsumer(opts ...MessageConsumerOption) (*MessageConsumer, error)
     c.Consumer, err = kafka.NewConsumer(&kafka.ConfigMap{
         "bootstrap.servers":  args.broker,
         "group.id":           args.group,
-        "enable.auto.commit": false,
+        // "enable.auto.commit": false,
         "auto.offset.reset":  "earliest"})
 
     if err != nil {
@@ -93,7 +93,7 @@ func newMessageConsumer(opts ...MessageConsumerOption) (*MessageConsumer, error)
     return &c, nil
 }
 
-func (c *MessageConsumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
+func (c *MessageConsumer) ProcessMessage(h func() error) error {
     sigchan := make(chan os.Signal, 1)
     signal.Notify(sigchan, os.Interrupt)
 
@@ -123,20 +123,23 @@ func (c *MessageConsumer) ProcessMessage(sClient *sumologic.SumoLogic) error {
                 // Parse the received msg
                 ProcessEvents(e.Value)
 
+                if err := h(); err != nil {
+                    return err
+                }
                 // Sent to SumoLogic
-                go sClient.SendLogs(e.Value)
+                // go sClient.SendLogs(e.Value)
 
                 // commit offset (using when setting "enable.auto.commit" is false - https://github.com/agis/confluent-kafka-go-GH64/blob/master/main.go)
-                tp := kafka.TopicPartition{
-                    Topic:     e.TopicPartition.Topic,
-                    Partition: 0,
-                    Offset:    e.TopicPartition.Offset + 1,
-                }
+                // tp := kafka.TopicPartition{
+                //     Topic:     e.TopicPartition.Topic,
+                //     Partition: 0,
+                //     Offset:    e.TopicPartition.Offset + 1,
+                // }
 
-                _, err := c.Consumer.CommitOffsets([]kafka.TopicPartition{tp})
-                if err != nil {
-                    fmt.Print(err)
-                }
+                // _, err := c.Consumer.CommitOffsets([]kafka.TopicPartition{tp})
+                // if err != nil {
+                //     fmt.Print(err)
+                // }
             case kafka.Error:
                 // Errors should generally be considered as informational, the client will try to automatically recover
                 fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)

@@ -55,6 +55,8 @@ func main() {
     if err != nil {
         logging.Error.Printf(err.Error())
     }
-    c.ProcessMessage(sClient)
+    c.ProcessMessage( func() error {
+        sClient.SendLogs(e.Value)
+    )
     c.Close()
 }
