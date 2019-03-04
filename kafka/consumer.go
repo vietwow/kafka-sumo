@@ -10,6 +10,36 @@ import (
     "github.com/vietwow/kafka-sumo/sumologic"
 )
 
+type MessageConsumerOption func(*messageConsumerOptions) error
+
+var MessageConsumerOptions messageConsumerOptions
+
+type messageConsumerOptions struct {
+    topic  string
+    broker string
+    group  string
+}
+
+func(messageConsumerOptions) Topic(topic string) MessageConsumerOption {
+    return func(o *messageConsumerOptions) error {
+        o.topic = topic 
+    }
+}
+
+func(messageConsumerOptions) Broker(broker string) MessageConsumerOption {
+    return func(o *messageConsumerOptions) error {
+        o.broker = broker 
+    }
+}
+
+func(messageConsumerOptions) Group(group string) MessageConsumerOption {
+    return func(o *messageConsumerOptions) error {
+        o.group = group 
+    }
+}
+
+
+
 type MessageConsumer struct {
     // Topic          string
     // ClientID       string
@@ -19,20 +49,28 @@ type MessageConsumer struct {
     DeliveredCount int64
 }
 
-func NewConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
-    return newMessageConsumer(topic, broker, group)
+func NewConsumer(opts ...MessageConsumerOption) (*MessageConsumer, error) {
+    return newMessageConsumer(opts...)
 }
 
-func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
+func newMessageConsumer(opts ...MessageConsumerOption) (*MessageConsumer, error) {
+    args := messageConsumerOptions{}
+    for _, opt := range opts {
+        if err := opt(args); err != nil {
+            return nil, err
+        }
+    }
+
+
     // Initialize kafka consumer
-    fmt.Printf("Creating consumer to broker %v with group %v\n", broker, group)
+    fmt.Printf("Creating consumer to broker %v with group %v\n", args.broker, args.group)
 
     c := MessageConsumer{}
     // var c *kafka.Consumer
     var err error
     c.Consumer, err = kafka.NewConsumer(&kafka.ConfigMap{
-        "bootstrap.servers":  broker,
-        "group.id":           group,
+        "bootstrap.servers":  args.broker,
+        "group.id":           args.group,
         "enable.auto.commit": false,
         "auto.offset.reset":  "earliest"})
 
@@ -42,11 +80,11 @@ func newMessageConsumer(topic string, broker string, group string) (*MessageCons
 
     fmt.Printf("=> Created Consumer %v\n", c)
 
-    err = c.Consumer.SubscribeTopics([]string{topic}, nil)
+    err = c.Consumer.SubscribeTopics([]string{args.topic}, nil)
     if err != nil {
-        return nil, fmt.Errorf("cannot subcribe to topic [%s] error [%#v]", topic, err)
+        return nil, fmt.Errorf("cannot subcribe to topic [%s] error [%#v]", args.topic, err)
     } else {
-        fmt.Println("=> Subscribed to topic :", topic)
+        fmt.Println("=> Subscribed to topic :", args.topic)
     }
 
     return &c, nil
