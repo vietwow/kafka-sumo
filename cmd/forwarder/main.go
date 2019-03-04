@@ -49,7 +49,7 @@ func main() {
 
     c, err := confluent.NewConsumer(topic, broker, group)
     if err != nil {
-        logging.Error.Printf(err)
+        logging.Error.Printf(err.Error())
     }
     c.ProcessMessage(sClient)
     c.Close()
