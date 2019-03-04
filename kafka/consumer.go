@@ -19,8 +19,8 @@ type MessageConsumer struct {
     DeliveredCount int64
 }
 
-func (c *MessageConsumer) NewConsumer(sClient *sumologic.SumoLogic) (*MessageConsumer, error) {
-    return newMessageConsumer(sClient), nil
+func (c *MessageConsumer) NewConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
+    return newMessageConsumer(topic, broker, group), nil
 }
 
 func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
