@@ -93,7 +93,7 @@ func newMessageConsumer(opts ...MessageConsumerOption) (*MessageConsumer, error)
     return &c, nil
 }
 
-func (c *MessageConsumer) ProcessMessage(h func() error) error {
+func (c *MessageConsumer) ProcessMessage(h func(msg *kafka.Message) error) error {
     sigchan := make(chan os.Signal, 1)
     signal.Notify(sigchan, os.Interrupt)
 
@@ -123,7 +123,7 @@ func (c *MessageConsumer) ProcessMessage(h func() error) error {
                 // Parse the received msg
                 ProcessEvents(e.Value)
 
-                if err := h(); err != nil {
+                if err := h(e); err != nil {
                     return err
                 }
                 // Sent to SumoLogic

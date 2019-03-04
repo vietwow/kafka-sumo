@@ -55,8 +55,8 @@ func main() {
     if err != nil {
         logging.Error.Printf(err.Error())
     }
-    c.ProcessMessage(func() error {
-        sClient.SendLogs(e.Value)
+    c.ProcessMessage(func(msg *kafka.Message) error {
+        sClient.SendLogs(msg.Value)
         return nil
     })
     c.Close()
