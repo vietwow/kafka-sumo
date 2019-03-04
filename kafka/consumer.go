@@ -19,7 +19,7 @@ type MessageConsumer struct {
     DeliveredCount int64
 }
 
-func (c *MessageConsumer) NewConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
+func NewConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
     return newMessageConsumer(topic, broker, group)
 }
 
