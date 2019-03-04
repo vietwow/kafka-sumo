@@ -3,7 +3,7 @@ package main
 import (
     "fmt"
     "os"
-    // "github.com/confluentinc/confluent-kafka-go/kafka"
+    "github.com/confluentinc/confluent-kafka-go/kafka"
     "io/ioutil"
     "time"
     "strings"
