@@ -20,7 +20,7 @@ type MessageConsumer struct {
 }
 
 func (c *MessageConsumer) NewConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
-    return newMessageConsumer(topic, broker, group), nil
+    return newMessageConsumer(topic, broker, group)
 }
 
 func newMessageConsumer(topic string, broker string, group string) (*MessageConsumer, error) {
