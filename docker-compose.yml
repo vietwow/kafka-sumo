@@ -49,5 +49,5 @@ services:
       BROKER: kafka:29092
       TOPIC: heroku_logs
       GROUP: myGroup
-      SUMOLOGIC_URL:
-      SUMOLOGIC_CAT:
+      SUMOLOGIC_URL: https://endpoint3.collection.us2.sumologic.com/receiver/v1/http/ZaVnC4dhaV3roU3-kIZNtE2iTbUBN9crYJBdOVmhT0KD7_tmOjxO0dRuSn0DmGYcSOznK5nRyCqsaPm69tsW2CVr51cK9ook29GUHCJg8bd1oa1GpZzY7A==
+      SUMOLOGIC_CAT: staging/logging

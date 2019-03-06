@@ -20,6 +20,8 @@ var (
     sSourceHost      = kingpin.Flag("sumologic.source.host", "Override default Source Host").Default("").String()
     version          = "0.0.0"
 
+    verbose  = kingpin.Flag("verbose", "Verbose mode.").Short('v').Bool()
+
     logs     = kingpin.Flag("log", logsHelp).Short('l').Default(logging.LevelsInSlice[3], logging.LevelsInSlice[1]).Enums(logging.LevelsInSlice[0:]...)
     logsHelp = fmt.Sprintf("Log levels: -l %s", strings.Join(logging.LevelsInSlice[0:], " -l "))
 )
